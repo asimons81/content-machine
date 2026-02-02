@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tony's Content Machine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>The Content Machine</h1>
+        <button id="add-idea-btn">+ New Idea</button>
+    </header>
+
+    <main class="board">
+        <div class="column" id="ideas">
+            <h2>💡 Ideas</h2>
+            <div class="card-list" id="list-ideas"></div>
+        </div>
+        <div class="column" id="drafts">
+            <h2>📝 Drafting</h2>
+            <div class="card-list" id="list-drafts"></div>
+        </div>
+        <div class="column" id="scheduled">
+            <h2>📅 Scheduled</h2>
+            <div class="card-list" id="list-scheduled"></div>
+        </div>
+        <div class="column" id="posted">
+            <h2>🚀 Posted</h2>
+            <div class="card-list" id="list-posted"></div>
+        </div>
+    </main>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>New Content Piece</h2>
+            <form id="content-form">
+                <label for="title">Headline / Hook</label>
+                <input type="text" id="title" required placeholder="e.g. Gemini 3 vs Sora...">
+                
+                <label for="type">Platform</label>
+                <select id="type">
+                    <option value="X">X (Twitter)</option>
+                    <option value="Newsletter">Newsletter</option>
+                    <option value="Video">Video</option>
+                </select>
+
+                <label for="date">Target Date</label>
+                <input type="date" id="date">
+
+                <label for="notes">Notes / Draft</label>
+                <textarea id="notes" rows="4"></textarea>
+
+                <button type="submit">Save Content</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
