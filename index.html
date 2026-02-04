@@ -8,30 +8,54 @@
 </head>
 <body>
     <header>
-        <h1>THE CONTENT <span>MACHINE</span></h1>
-        <div id="sync-status" style="font-size: 0.8rem; color: #4ade80; margin-left: 10px;">● Server Sync Active</div>
-        <button id="add-idea-btn">+ New Idea</button>
+        <div class="header-left">
+            <h1>THE CONTENT <span>MACHINE</span></h1>
+            <div id="sync-status" class="sync-badge">● Server Sync Active</div>
+        </div>
+        <div class="header-stats" id="pipeline-stats">
+            <div class="stat">
+                <span class="stat-value" id="stat-ideas">-</span>
+                <span class="stat-label">Ideas</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat-drafts">-</span>
+                <span class="stat-label">Drafts</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat-scheduled">-</span>
+                <span class="stat-label">Scheduled</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat-posted">-</span>
+                <span class="stat-label">Posted</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button id="amplify-btn" class="btn-secondary" onclick="window.open('https://x-amplify.streamlit.app/', '_blank')">⚡ X-Amplify</button>
+            <button id="add-idea-btn">+ New Idea</button>
+        </div>
     </header>
 
     <main class="board">
         <div class="column" id="ideas">
-            <h2>💡 Ideas</h2>
+            <h2>💡 Ideas <span class="column-count" id="count-ideas"></span></h2>
             <div class="card-list" id="list-ideas"></div>
         </div>
         <div class="column" id="drafts">
-            <h2>📝 Drafting</h2>
+            <h2>📝 Drafting <span class="column-count" id="count-drafts"></span></h2>
             <div class="card-list" id="list-drafts"></div>
         </div>
         <div class="column" id="scheduled">
-            <h2>📅 Scheduled</h2>
+            <h2>📅 Scheduled <span class="column-count" id="count-scheduled"></span></h2>
             <div class="card-list" id="list-scheduled"></div>
         </div>
         <div class="column" id="posted">
-            <h2>🚀 Posted</h2>
+            <h2>🚀 Posted <span class="column-count" id="count-posted"></span></h2>
             <div class="card-list" id="list-posted"></div>
         </div>
     </main>
 
+    <!-- New Idea Modal -->
     <div id="modal" class="modal hidden">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -55,6 +79,14 @@
 
                 <button type="submit">Save Content</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Card Detail Modal -->
+    <div id="detail-modal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeDetailModal()">&times;</span>
+            <div id="detail-content"></div>
         </div>
     </div>
 
