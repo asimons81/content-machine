@@ -108,9 +108,10 @@ function render() {
                 ${idea.date ? `<span class="card-date">${idea.date}</span>` : ''}
                 <div class="card-title">${sourceIcon} ${idea.title}</div>
                 <div class="card-actions">
-                    <button class="card-btn" onclick="event.stopPropagation(); openInAmplify('${encodeURIComponent(idea.title)}')">⚡</button>
-                    <button class="card-btn" onclick="event.stopPropagation(); showDetail(${idea.id})">👁️</button>
-                    <button class="card-btn card-btn-advance" onclick="event.stopPropagation(); advanceCard(${idea.id})">→</button>
+                    <button class="card-btn" onclick="event.stopPropagation(); openInAmplify('${encodeURIComponent(idea.title)}')" title="Generate posts">⚡</button>
+                    <button class="card-btn" onclick="event.stopPropagation(); queueRender(${JSON.stringify(idea).replace(/"/g, '&quot;')})" title="Queue video render">🎬</button>
+                    <button class="card-btn" onclick="event.stopPropagation(); showDetail(${idea.id})" title="View details">👁️</button>
+                    <button class="card-btn card-btn-advance" onclick="event.stopPropagation(); advanceCard(${idea.id})" title="Move forward">→</button>
                 </div>
             `;
             el.onclick = () => showDetail(idea.id);
@@ -127,6 +128,28 @@ function openInAmplify(title) {
     navigator.clipboard.writeText(decodeURIComponent(title)).then(() => {
         showToast('📋 Title copied! Paste in X-Amplify');
     });
+}
+
+async function queueRender(idea) {
+    try {
+        const res = await fetch('/api/render/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                idea, 
+                template: 'ReviewerUltra',
+                priority: idea.score || 1
+            })
+        });
+        
+        if (res.ok) {
+            showToast('🎬 Added to render queue!');
+        } else {
+            showToast('❌ Failed to queue render');
+        }
+    } catch (e) {
+        showToast('❌ Server offline - cannot queue render');
+    }
 }
 
 function showToast(message) {
@@ -156,6 +179,7 @@ function showDetail(id) {
         ${idea.notes ? `<div class="detail-notes"><h3>Notes</h3><p>${idea.notes}</p></div>` : ''}
         <div class="detail-actions">
             <button onclick="openInAmplify('${encodeURIComponent(idea.title)}')" class="btn-primary">⚡ Generate Posts</button>
+            <button onclick="queueRender(${JSON.stringify(idea).replace(/"/g, '&quot;')})" class="btn-secondary">🎬 Queue Video</button>
             <button onclick="advanceCard(${idea.id}); closeDetailModal();" class="btn-secondary">→ Move Forward</button>
             <button onclick="deleteCard(${idea.id})" class="btn-danger">🗑️ Delete</button>
         </div>
