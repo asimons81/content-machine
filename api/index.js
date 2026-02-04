@@ -55,3 +55,10 @@ module.exports = (req, res) => {
         res.end();
     }
 };
+
+if (require.main === module) {
+    const http = require('http');
+    const PORT = 3001;
+    const server = http.createServer(module.exports);
+    server.listen(PORT, () => console.log(`API running on port ${PORT}`));
+}
