@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 
-const IDEAS_DIR = path.join(__dirname, '..', 'second-brain', 'content', 'ideas');
+const IDEAS_DIR = path.join(process.cwd(), 'second-brain', 'content', 'ideas');
 const PORT = 3001;
 
 if (!fs.existsSync(IDEAS_DIR)) {
