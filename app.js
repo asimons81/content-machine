@@ -1,7 +1,48 @@
-const ideas = JSON.parse(localStorage.getItem('contentIdeas')) || [];
+const API_URL = '/api/ideas';
+let ideas = [];
 
-function saveIdeas() {
+async function loadIdeas() {
+    const statusEl = document.getElementById('sync-status');
+    try {
+        const res = await fetch(API_URL);
+        if (res.ok) {
+            ideas = await res.json();
+            if (statusEl) {
+                statusEl.innerText = '● Server Sync Active';
+                statusEl.style.color = '#4ade80';
+            }
+        } else {
+            throw new Error();
+        }
+    } catch (e) {
+        ideas = JSON.parse(localStorage.getItem('contentIdeas')) || [];
+        if (statusEl) {
+            statusEl.innerText = '○ Local Mode (Offline)';
+            statusEl.style.color = '#fbbf24';
+        }
+    }
+    render();
+}
+
+async function saveIdea(idea) {
+    // Save locally first
+    const existingIdx = ideas.findIndex(i => i.id === idea.id);
+    if (existingIdx > -1) {
+        ideas[existingIdx] = idea;
+    } else {
+        ideas.push(idea);
+    }
     localStorage.setItem('contentIdeas', JSON.stringify(ideas));
+
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(idea)
+        });
+    } catch (e) {
+        console.error('Failed to sync with server:', e);
+    }
     render();
 }
 
@@ -19,7 +60,6 @@ function render() {
                 ${idea.date ? `<span class="card-date">${idea.date}</span>` : ''}
                 <div>${idea.title}</div>
             `;
-            // Simple click to move forward for now (mobile friendly)
             el.onclick = () => advanceCard(idea.id);
             list.appendChild(el);
         });
@@ -27,14 +67,14 @@ function render() {
 }
 
 function advanceCard(id) {
-    const idea = ideas.find(i => i.id === id);
+    const idea = ideas.find(i => i.id == id);
     if (!idea) return;
     
     const flow = ['ideas', 'drafts', 'scheduled', 'posted'];
     const idx = flow.indexOf(idea.status);
     if (idx < flow.length - 1) {
         idea.status = flow[idx + 1];
-        saveIdeas();
+        saveIdea(idea);
     }
 }
 
@@ -43,11 +83,11 @@ document.querySelectorAll('.column').forEach(col => {
     col.ondragover = (e) => e.preventDefault();
     col.ondrop = (e) => {
         e.preventDefault();
-        const id = parseInt(e.dataTransfer.getData('text/plain'));
-        const idea = ideas.find(i => i.id === id);
+        const id = e.dataTransfer.getData('text/plain');
+        const idea = ideas.find(i => i.id == id);
         if (idea) {
-            idea.status = col.id; // column id matches status
-            saveIdeas();
+            idea.status = col.id;
+            saveIdea(idea);
         }
     };
 });
@@ -68,19 +108,19 @@ document.getElementById('content-form').onsubmit = (e) => {
     const date = document.getElementById('date').value;
     const notes = document.getElementById('notes').value;
 
-    ideas.push({
+    const newIdea = {
         id: Date.now(),
         title,
         type,
         date,
         notes,
         status: 'ideas'
-    });
+    };
 
-    saveIdeas();
+    saveIdea(newIdea);
     modal.classList.add('hidden');
     document.getElementById('content-form').reset();
 };
 
 // Init
-render();
+loadIdeas();
